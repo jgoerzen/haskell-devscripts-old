@@ -3,7 +3,7 @@
 
 =head1 NAME
 
-dh_haskell - calculates Haskell dependencies and adds postinst and prerm Haskell scripts
+dh_haskell - Builds Cabalized libraries, calculates Haskell dependencies, and adds postinst and prerm Haskell scripts
 
 =cut
 
@@ -17,13 +17,9 @@ B<dh_haskell> [S<I<debhelper options>>]
 
 =head1 DESCRIPTION
 
-dh_haskell is a debhelper program that is responsible for generating the
-${ghc5:Depends}, ${ghc6:Depends}, ${hugs:Depends}, and ${nhc98:Depends}
-
-${haskell:Depends}
-
-substitions and adding them to the substvars files.  It will also add
-a postinst and a prerm script if required.
+dh_haskell is a debhelper program that is responsible for generating
+the ${haskell:Depends} substitions and adding them to the substvars
+files.  It will also add a postinst and a prerm script if required.
 
 =cut
 
@@ -36,8 +32,8 @@ sub is_handled_package {
 
 sub type_of_package {
     my $pkgname = shift;
-    @pn = ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/);
-    return @pn[0];
+    my @pn = ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/);
+    return $pn[0];
     }
 
 sub version_of_debpkg {
@@ -53,8 +49,8 @@ sub version_of_type {
 sub upstream_version {
     my $inver = shift;
     if ($inver =~ m/-/) {
-        @v = ($inver =~ m/^(.+)-[^-]+$/);
-        return @v[0];
+        my @v = ($inver =~ m/^(.+)-[^-]+$/);
+        return $v[0];
     }
 }
             
@@ -81,12 +77,14 @@ sub getcabalpkglibpath {
     return getcabalbasepath($pkgtype) . "/lib/" . getcabalnameversion();
 }
 
-# dependency types
-use constant PROGRAM   => 1;
-use constant PY_MODULE => 2;
-use constant PY_MODULE_NONSTANDARD => 4;
-use constant SO_MODULE => 8;
-use constant SO_MODULE_NONSTANDARD => 16;
+sub safesystem {
+    my $program = shift;
+    print "Running: $program\n";
+    system($program) == 0
+        or die "$program files: $?";
+}
+
+print "Generating meta-information...\n";
 
 foreach my $package (@{$dh{DOPACKAGES}}) {
 	my $tmp = tmpdir($package);
@@ -114,16 +112,42 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
 
 }
 
+print "Building setup...\n";
+safesystem("ghc6 -package Cabal Setup.lhs -o setup");
+
+foreach my $package (@{$dh{DOPACKAGES}}) {
+    my $tmp = tmpdir($package);
+    if (is_handled_package($package)) {
+        my $pkgtype = type_of_package($package);
+        
+        print "\n ****************************************** \n";
+        print " NOW BUILDING $package FOR $pkgtype\n";
+        print " OUTPUT TO $tmp\n\n";
+        
+        print "Cleaning...";
+        system("./setup clean");
+        safesystem("rm -f .*config*");
+        
+        safesystem("./setup configure --prefix=" . getcabalbasepath($pkgtype)
+                   . " --with-compiler=/usr/bin/$pkgtype");
+        safesystem("./setup build");
+        safesystem("mkdir -p $tmp/usr/share/doc/$package");
+        safesystem("mkdir -p $tmp" . getcabalbasepath($pkgtype));
+        safesystem("./setup install --install-prefix=$tmp" . getcabalbasepath($pkgtype));
+        safesystem("cp .installed-pkg-config $tmp" . getcabalpkglibpath($pkgtype));
+        print " Build for $pkgtype complete.\n";
+    }
+}
+
+
 =head1 SEE ALSO
 
 L<debhelper(7)>
 
-This program is a part of debhelper.
-
 =head1 AUTHOR
 
-Josselin Mouette <joss@debian.org>
+John Goerzen <jgoerzen@complete.org>
 
-most ideas stolen from Brendan O'Dea <bod@debian.org>
+Based on ideas in dh_python by Josselin Mouette <joss@debian.org>
 
 =cut
