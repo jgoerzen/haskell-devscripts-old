@@ -45,10 +45,20 @@ In short, it can drive the entire process.
 =head1 REQUIREMENTS
 
 dh_haskell assumes that your packages are adhering to the draft Haskell policy.
+
 Your control file must build the binary library files using packages named
-libI<type>-I<name>-dev, where I<type> is ghc5, ghc6, nhc98, or hugs; and
-I<name> is the name of your package.  dh_haskell figures out how to
-build your package based on the I<type>.
+libI<type>-I<name>-dev, where I<type> is ghc5, ghc6, or nhc98; and
+I<name> is the name of your package.  These packages should be Architecture:
+any.
+
+If you build a Hugs package, name it libhugs-I<name>.  However, dh_haskell
+will also accept libhugs-I<name>-dev for consistency.  Most Hugs packages
+should be Architecture: all.  If your package uses foreign methods,
+maybe it should be Architecture: any (please let me know if you have
+an answer to that).
+
+dh_haskell figures out how to build your package based on the I<type>,
+so you must adhere to this naming scheme.
 
 dh_haskell assumes that the Haskell Cabal (see www.haskell.org/cabal) can
 be used to build your package.  It obtains package name and version
@@ -68,6 +78,11 @@ targets should be empty.
 Remember that you should add -a to all debhelper calls for multi-binary
 packages.  That goes for dh_haskell too.
 
+Your clean target should contain:
+
+C<-./setup clean>
+C<--rm -rf setup Setup.{hi,ho,o} .*config* dist>
+
 That's it.  dh_haskell does the rest.
 
 =head1 EXAMPLE
@@ -80,14 +95,24 @@ init();
 
 sub is_handled_package {
     my $pkgname = shift;
-    return ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/);
+    if ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/) {
+        return 1;
+    } elsif ($pkgname =~ m/libhugs-.+$/) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 sub type_of_package {
     my $pkgname = shift;
-    my @pn = ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/);
-    return $pn[0];
+    if ($pkgname =~ m/^libhugs-.+$/) {
+        return "hugs";
+    } else {
+        my @pn = ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/);
+        return $pn[0];
     }
+}
 
 sub version_of_debpkg {
     my $pkgname = shift;
@@ -153,8 +178,10 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
             delsubstvar($package, "haskell:Depends");
             addsubstvar($package, "haskell:Depends", 
                         $pkgtype, ">= " . upstream_version(version_of_type($pkgtype)));
-            addsubstvar($package, "haskell:Depends",
-                        $pkgtype, "<< " . upstream_version(version_of_type($pkgtype)) . "-999");
+            if (! ($pkgtype eq "hugs")) {
+                addsubstvar($package, "haskell:Depends",
+                            $pkgtype, "<< " . upstream_version(version_of_type($pkgtype)) . "-999");
+            }
             
             if ($pkgtype eq "ghc5" || $pkgtype eq "ghc6") {
                 # Build scripts
@@ -189,22 +216,34 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
         system("./setup clean");
         safesystem("rm -f .*config*");
         
-        safesystem("./setup configure --prefix=" . getcabalbasepath($pkgtype)
-                   . " --with-compiler=/usr/bin/$pkgtype");
-        safesystem("./setup build");
-        safesystem("mkdir -p $tmp/usr/share/doc/$package");
-        safesystem("mkdir -p $tmp" . getcabalbasepath($pkgtype));
-        safesystem("./setup install --install-prefix=$tmp" . getcabalbasepath($pkgtype));
-        safesystem("cp .installed-pkg-config $tmp" . getcabalpkglibpath($pkgtype) . "/installed-pkg-config");
+        if ($pkgtype eq "hugs") {
+            safesystem("./setup configure --hugs");
+        } else {
+            safesystem("./setup configure --prefix=" . getcabalbasepath($pkgtype)
+                       . " --with-compiler=/usr/bin/$pkgtype");
+        }
+        if ($pkgtype eq "hugs") {
+            # Cabal always dies here.
+            print "Running: ./setup build\n";
+            system("./setup build");
+            safesystem("mkdir -p $tmp/usr/lib/hugs/libraries");
+            safesystem("cp -rv dist/build/* $tmp/usr/lib/hugs/libraries/");
+        } else {
+            safesystem("./setup build");
+            safesystem("mkdir -p $tmp/usr/share/doc/$package");
+            safesystem("mkdir -p $tmp" . getcabalbasepath($pkgtype));
+            safesystem("./setup install --install-prefix=$tmp" . getcabalbasepath($pkgtype));
+            safesystem("cp .installed-pkg-config $tmp" . getcabalpkglibpath($pkgtype) . "/installed-pkg-config");
+        }
         print " Build for $pkgtype complete.\n";
     }
 }
 
 =head1 BUGS
 
-ghc6 and ghc5 are the only supported targets at the moment.  Cabal does
-not yet support hugs and nhc98 has not yet been tested.  Note, though,
-that ghc5 may not work with Cabal at present.
+hugs, ghc6, and ghc5 are the only supported targets at the moment.  Cabal does
+not yet support nhc98.  Note though that there are some known bugs in
+Cabal relating to ghc5 support.
 
 =head1 SEE ALSO
 
