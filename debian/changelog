@@ -1,3 +1,10 @@
+haskell-devscripts (0.5.5) unstable; urgency=low
+
+  * Adjusted Depends so ghc 6.4 can be considered to fulfill the requirement
+    for having Cabal.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 28 Mar 2005 08:56:48 -0600
+
 haskell-devscripts (0.5.4) unstable; urgency=low
 
   * Use *.cabal files instead of Setup.description.
