@@ -34,7 +34,7 @@ build-stamp: configure-stamp
 	dh_testdir
 
 	# Add here commands to compile the package.
-	$(MAKE)
+	#$(MAKE)
 	#docbook-to-man debian/haskell-devscripts.sgml > haskell-devscripts.1
 
 	touch build-stamp
@@ -45,7 +45,6 @@ clean:
 	rm -f build-stamp configure-stamp
 
 	# Add here commands to clean up after the build process.
-	-$(MAKE) clean
 
 	dh_clean 
 
@@ -56,15 +55,17 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/haskell-devscripts.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/haskell-devscripts
+	#$(MAKE) install DESTDIR=$(CURDIR)/debian/haskell-devscripts
+	cp dh_haskell debian/haskell-devscripts/usr/bin/
+	cp p*-haskell debian/haskell-devscripts/usr/share/debhelper/autoscripts/
 
 
-# Build architecture-independent files here.
-binary-indep: build install
+
+binary-arch: build install
 # We have nothing to do by default.
 
 # Build architecture-dependent files here.
-binary-arch: build install
+binary-indep: build install
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs 
