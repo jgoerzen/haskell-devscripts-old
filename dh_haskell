@@ -81,7 +81,7 @@ packages.  That goes for dh_haskell too.
 Your clean target should contain:
 
 C<-./setup clean>
-C<--rm -rf setup Setup.{hi,ho,o} .*config* dist>
+C<--rm -rf setup Setup.hi Setup.ho Setup.o .*config* dist>
 
 That's it.  dh_haskell does the rest.
 
