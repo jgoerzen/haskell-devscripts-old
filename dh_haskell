@@ -70,6 +70,10 @@ packages.  That goes for dh_haskell too.
 
 That's it.  dh_haskell does the rest.
 
+=head1 EXAMPLE
+
+See the Debian source package for missinh, version 0.1.1 or above.
+
 =cut
 
 init();
