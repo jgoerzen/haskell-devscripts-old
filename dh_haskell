@@ -34,9 +34,41 @@ B<dh_haskell> [S<I<debhelper options>>]
 
 =head1 DESCRIPTION
 
-dh_haskell is a debhelper program that is responsible for generating
-the ${haskell:Depends} substitions and adding them to the substvars
-files.  It will also add a postinst and a prerm script if required.
+dh_haskell is a debhelper program that helps with building Haskell libraries.
+
+It does several things.  It can generat postinst and prerm scripts when
+necessary.  It automates building libraries for the different supported
+Haskell systems in Debian.  It generates substvars for your control
+file so that the library packages depend on the appropriate packages.
+In short, it can drive the entire process.
+
+=head1 REQUIREMENTS
+
+dh_haskell assumes that your packages are adhering to the draft Haskell policy.
+Your control file must build the binary library files using packages named
+libI<type>-I<name>-dev, where I<type> is ghc5, ghc6, nhc98, or hugs; and
+I<name> is the name of your package.  dh_haskell figures out how to
+build your package based on the I<type>.
+
+dh_haskell assumes that the Haskell Cabal (see www.haskell.org/cabal) can
+be used to build your package.  It obtains package name and version
+information from the Cabal Setup.Description file.
+
+=head1 HOW TO PACKAGE A HASKELL LIBRARY
+
+Start from a basic debian/ directory.  Add entries to Build-Depends for
+haskell-devscripts and the compilers for any binaries you will build.
+
+In the clause in control for each binary package, make sure to add
+${haskell:Depends} to the Depends: line.
+
+In rules, in the install target, add dh_haskell.  Your build and configure
+targets should be empty.
+
+Remember that you should add -a to all debhelper calls for multi-binary
+packages.  That goes for dh_haskell too.
+
+That's it.  dh_haskell does the rest.
 
 =cut
 
@@ -164,6 +196,11 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
     }
 }
 
+=head1 BUGS
+
+ghc6 and ghc5 are the only supported targets at the moment.  Cabal does
+not yet support hugs and nhc98 has not yet been tested.  Note, though,
+that ghc5 may not work with Cabal at present.
 
 =head1 SEE ALSO
 
