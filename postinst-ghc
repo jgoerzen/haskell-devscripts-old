@@ -1,6 +1,24 @@
 GHC=#GHCVER#
 CONFIGFILE=#PKGLIBDIR#/installed-pkg-config
-/usr/lib/$GHC/bin/ghc-pkg -g --add-package \
-  < $CONFIGFILE
+
+
+case "$1" in
+    configure)
+    /usr/lib/$GHC/bin/ghc-pkg -g --add-package \
+      < $CONFIGFILE
+
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+
 
 # arch-tag: haskell-devscripts generic GHC postinst template
