@@ -1,3 +1,9 @@
+haskell-devscripts (0.5.4) unstable; urgency=low
+
+  * Use *.cabal files instead of Setup.description.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 27 Jan 2005 12:35:54 -0600
+
 haskell-devscripts (0.5.3) unstable; urgency=low
 
   * Updated for new cabal.

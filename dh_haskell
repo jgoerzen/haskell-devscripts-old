@@ -136,13 +136,13 @@ sub upstream_version {
             
 
 sub getcabalname {
-    my $retval = `grep ^Name Setup.description | awk '{print \$2}'`;
+    my $retval = `grep ^Name *.cabal | awk '{print \$2}'`;
     chomp $retval;
     return $retval;
 }
 
 sub getcabalversion {
-    my $retval = `grep ^Version Setup.description | awk '{print \$2}'`;
+    my $retval = `grep ^Version *.cabal | awk '{print \$2}'`;
     chomp $retval;
     return $retval;
 }
