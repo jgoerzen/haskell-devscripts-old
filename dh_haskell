@@ -55,7 +55,9 @@ sub type_of_package {
 
 sub version_of_debpkg {
     my $pkgname = shift;
-    return `dpkg -s $pkgname | grep ^Version | awk '{print $2}'`;
+    my $retval = `dpkg -s $pkgname | grep ^Version | awk '{print \$2}'`;
+    chomp $retval;
+    return $retval;
     }
 
 sub version_of_type {
@@ -73,11 +75,15 @@ sub upstream_version {
             
 
 sub getcabalname {
-    return `grep ^Name Setup.description | awk '{print $2}'`;
+    my $retval = `grep ^Name Setup.description | awk '{print \$2}'`;
+    chomp $retval;
+    return $retval;
 }
 
 sub getcabalversion {
-    return `grep ^Version Setup.description | awk '{print $2}'`;
+    my $retval = `grep ^Version Setup.description | awk '{print \$2}'`;
+    chomp $retval;
+    return $retval;
 }
 
 sub getcabalnameversion {
@@ -120,10 +126,12 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
                 my $pkglibdir = getcabalpkglibpath($pkgtype);
                 my $cabalname = getcabalname();
                 my $cabalversion = getcabalversion();
+
+                print "$ghcver $pkglibdir $cabalname $cabalversion\n";
                 autoscript($package,"postinst","postinst-ghc",
-                           "s%#GHCVER#$ghcver%;s%#PKGLIBDIR#%$pkglibdir%");
+                           "s%#GHCVER#%$ghcver%;s%#PKGLIBDIR#%$pkglibdir%");
                 autoscript($package,"prerm","prerm-ghc",
-                           "s%#GHCVER#$ghcver%;s%#PKGLIBDIR#%$pkglibdir%;s%#CABALNAME#%$cabalname%;s%#CABALVERSION#%$cabalversion%");
+                           "s%#GHCVER#%$ghcver%;s%#PKGLIBDIR#%$pkglibdir%;s%#CABALNAME#%$cabalname%;s%#CABALVERSION#%$cabalversion%");
             }
         }
 
@@ -141,7 +149,7 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
         print " NOW BUILDING $package FOR $pkgtype\n";
         print " OUTPUT TO $tmp\n\n";
         
-        print "Cleaning...";
+        print "Cleaning...\n";
         system("./setup clean");
         safesystem("rm -f .*config*");
         
@@ -151,7 +159,7 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
         safesystem("mkdir -p $tmp/usr/share/doc/$package");
         safesystem("mkdir -p $tmp" . getcabalbasepath($pkgtype));
         safesystem("./setup install --install-prefix=$tmp" . getcabalbasepath($pkgtype));
-        safesystem("cp .installed-pkg-config $tmp" . getcabalpkglibpath($pkgtype));
+        safesystem("cp .installed-pkg-config $tmp" . getcabalpkglibpath($pkgtype) . "/installed-pkg-config");
         print " Build for $pkgtype complete.\n";
     }
 }
