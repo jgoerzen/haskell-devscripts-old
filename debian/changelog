@@ -1,3 +1,9 @@
+haskell-devscripts (0.5.3) unstable; urgency=low
+
+  * Updated for new cabal.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 17 Jan 2005 16:49:41 -0600
+
 haskell-devscripts (0.5.2) unstable; urgency=low
 
   * Make dep on libch6-cabal-dev versioned; older versions have bugs that
