@@ -1,6 +1,6 @@
 haskell-devscripts (0.5.0) unstable; urgency=low
 
-  * Initial Release.
+  * Initial Release.  Closes: #275218.
 
  -- John Goerzen <jgoerzen@complete.org>  Wed,  6 Oct 2004 09:46:14 -0500
 
