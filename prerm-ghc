@@ -1,0 +1,8 @@
+GHC=#GHCVER#
+CONFIGFILE=#PKGLIBDIR#/installed-pkg-config
+CABALNAME=#CABALNAME#
+
+/usr/lib/$GHC/bin/ghc-pkg -r $CABALNAME
+rm -vf #PKGLIBDIR#/HS#CABALNAME#-#CABALVERSION#.o
+
+# arch-tag: haskell-devscripts generic GHC prerm template

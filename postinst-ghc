@@ -1,0 +1,6 @@
+GHC=#GHCVER#
+CONFIGFILE=#PKGLIBDIR#/installed-pkg-config
+/usr/lib/$GHC/bin/ghc-pkg -g --add-package \
+  < $CONFIGFILE
+
+# arch-tag: haskell-devscripts generic GHC postinst template

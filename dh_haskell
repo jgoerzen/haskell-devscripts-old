@@ -1,0 +1,129 @@
+#!/usr/bin/perl -w
+# arch-tag: Debhelper script for Haskell
+
+=head1 NAME
+
+dh_haskell - calculates Haskell dependencies and adds postinst and prerm Haskell scripts
+
+=cut
+
+use strict;
+use File::Find;
+use Debian::Debhelper::Dh_Lib;
+
+=head1 SYNOPSIS
+
+B<dh_haskell> [S<I<debhelper options>>] 
+
+=head1 DESCRIPTION
+
+dh_haskell is a debhelper program that is responsible for generating the
+${ghc5:Depends}, ${ghc6:Depends}, ${hugs:Depends}, and ${nhc98:Depends}
+
+${haskell:Depends}
+
+substitions and adding them to the substvars files.  It will also add
+a postinst and a prerm script if required.
+
+=cut
+
+init();
+
+sub is_handled_package {
+    my $pkgname = shift;
+    return ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/);
+}
+
+sub type_of_package {
+    my $pkgname = shift;
+    @pn = ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/);
+    return @pn[0];
+    }
+
+sub version_of_debpkg {
+    my $pkgname = shift;
+    return `dpkg -s $pkgname | grep ^Version | awk '{print $2}'`;
+    }
+
+sub version_of_type {
+    my $pkgtype = shift;
+    return version_of_debpkg($pkgtype);
+}
+
+sub upstream_version {
+    my $inver = shift;
+    if ($inver =~ m/-/) {
+        @v = ($inver =~ m/^(.+)-[^-]+$/);
+        return @v[0];
+    }
+}
+            
+
+sub getcabalname {
+    return `grep ^Name Setup.description | awk '{print $2}'`;
+}
+
+sub getcabalversion {
+    return `grep ^Version Setup.description | awk '{print $2}'`;
+}
+
+sub getcabalnameversion {
+    return getcabalname() . "-" . getcabalversion();
+}
+
+sub getcabalbasepath {
+    my $pkgtype = shift;
+    return "/usr/lib/haskell-packages/$pkgtype";
+}
+
+sub getcabalpkglibpath {
+    my $pkgtype = shift;
+    return getcabalbasepath($pkgtype) . "/lib/" . getcabalnameversion();
+}
+
+# dependency types
+use constant PROGRAM   => 1;
+use constant PY_MODULE => 2;
+use constant PY_MODULE_NONSTANDARD => 4;
+use constant SO_MODULE => 8;
+use constant SO_MODULE_NONSTANDARD => 16;
+
+foreach my $package (@{$dh{DOPACKAGES}}) {
+	my $tmp = tmpdir($package);
+
+        if (is_handled_package($package)) {
+            my $pkgtype = type_of_package($package);
+            delsubstvar($package, "haskell:Depends");
+            addsubstvar($package, "haskell:Depends", 
+                        $pkgtype, ">= " . upstream_version(version_of_type($pkgtype)));
+            addsubstvar($package, "haskell:Depends",
+                        $pkgtype, "<< " . upstream_version(version_of_type($pkgtype)) . "-999");
+            
+            if ($pkgtype eq "ghc5" || $pkgtype eq "ghc6") {
+                # Build scripts
+                my $ghcver = "ghc-" . upstream_version(version_of_type($pkgtype));
+                my $pkglibdir = getcabalpkglibpath($pkgtype);
+                my $cabalname = getcabalname();
+                my $cabalversion = getcabalversion();
+                autoscript($package,"postinst","postinst-ghc",
+                           "s%#GHCVER#$ghcver%;s%#PKGLIBDIR#%$pkglibdir%");
+                autoscript($package,"prerm","prerm-ghc",
+                           "s%#GHCVER#$ghcver%;s%#PKGLIBDIR#%$pkglibdir%;s%#CABALNAME#%$cabalname%;s%#CABALVERSION#%$cabalversion%");
+            }
+        }
+
+}
+
+=head1 SEE ALSO
+
+L<debhelper(7)>
+
+This program is a part of debhelper.
+
+=head1 AUTHOR
+
+Josselin Mouette <joss@debian.org>
+
+most ideas stolen from Brendan O'Dea <bod@debian.org>
+
+=cut
