@@ -1,3 +1,10 @@
+haskell-devscripts (0.5.2) unstable; urgency=low
+
+  * Make dep on libch6-cabal-dev versioned; older versions have bugs that
+    can cause us trouble.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 11 Nov 2004 11:31:29 -0600
+
 haskell-devscripts (0.5.1) unstable; urgency=low
 
   * Added support for Hugs.

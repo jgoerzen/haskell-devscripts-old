@@ -7,7 +7,7 @@ Standards-Version: 3.6.1
 
 Package: haskell-devscripts
 Architecture: all
-Depends: debhelper, libghc6-cabal-dev, ghc6
+Depends: debhelper, libghc6-cabal-dev (>= 0.2-3), ghc6
 Description: Tools to help Debian developers build Haskell packages
  This package provides a collection of scripts to help build Haskell
  packages for Debian.  Unlike haskell-utils, this package is not
