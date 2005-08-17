@@ -7,7 +7,7 @@ haskell-devscripts (0.5.9) unstable; urgency=low
 
 haskell-devscripts (0.5.8) unstable; urgency=low
 
-  * Fixed split between dh_haskell_build.
+  * Fixed a few bugs in the new system.
 
  -- John Goerzen <jgoerzen@complete.org>  Wed, 17 Aug 2005 03:41:05 -0500
 
