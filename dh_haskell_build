@@ -168,40 +168,6 @@ sub safesystem {
         or die "$program files: $?";
 }
 
-print "Generating meta-information...\n";
-
-foreach my $package (@{$dh{DOPACKAGES}}) {
-	my $tmp = tmpdir($package);
-
-        if (is_handled_package($package)) {
-            my $pkgtype = type_of_package($package);
-            delsubstvar($package, "haskell:Depends");
-            addsubstvar($package, "haskell:Depends", 
-                        $pkgtype, ">= " . upstream_version(version_of_type($pkgtype)));
-            if (! ($pkgtype eq "hugs")) {
-                addsubstvar($package, "haskell:Depends",
-                            $pkgtype, "<< " . upstream_version(version_of_type($pkgtype)) . "-999");
-            }
-            
-            if ($pkgtype eq "ghc5" || $pkgtype eq "ghc6") {
-                # Build scripts
-                my $ghcver = "ghc-" . upstream_version(version_of_type($pkgtype));
-                my $pkglibdir = getcabalpkglibpath($pkgtype);
-                my $cabalname = getcabalname();
-                my $cabalversion = getcabalversion();
-
-                print "$ghcver $pkglibdir $cabalname $cabalversion\n";
-                autoscript($package,"postinst","postinst-ghc",
-                           "s%#GHCVER#%$ghcver%;s%#PKGLIBDIR#%$pkglibdir%");
-                autoscript($package,"prerm","prerm-ghc",
-                           "s%#GHCVER#%$ghcver%;s%#PKGLIBDIR#%$pkglibdir%;s%#CABALNAME#%$cabalname%;s%#CABALVERSION#%$cabalversion%");
-            }
-        }
-
-}
-
-safesystem("dh_haskell_build")
-
 print "Building setup...\n";
 safesystem("ghc6 -package Cabal Setup.lhs -o setup");
 

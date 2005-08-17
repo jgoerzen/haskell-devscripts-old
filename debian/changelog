@@ -1,3 +1,9 @@
+haskell-devscripts (0.5.7) unstable; urgency=low
+
+  * Added dh_haskell_build.
+
+ -- John Goerzen <jgoerzen@complete.org>  Wed, 17 Aug 2005 02:46:04 -0500
+
 haskell-devscripts (0.5.6) unstable; urgency=low
 
   * Tightened up Depends on libghc6-cabal-dev for interface consistency.
