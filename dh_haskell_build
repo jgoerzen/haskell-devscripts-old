@@ -186,9 +186,13 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
         
         if ($pkgtype eq "hugs") {
             safesystem("./setup configure --hugs");
+            # Cabal always dies here.
+            print "Running: ./setup build\n";
+            system("./setup build");
         } else {
             safesystem("./setup configure --prefix=" . getcabalbasepath($pkgtype)
                        . " --with-compiler=/usr/bin/$pkgtype");
+            safesystem("./setup build");
         }
     }
 }

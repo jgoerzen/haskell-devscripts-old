@@ -175,13 +175,9 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
     my $tmp = tmpdir($package);
     if (is_handled_package($package)) {
         if ($pkgtype eq "hugs") {
-            # Cabal always dies here.
-            print "Running: ./setup build\n";
-            system("./setup build");
             safesystem("mkdir -p $tmp/usr/lib/hugs/libraries");
             safesystem("cp -rv dist/build/* $tmp/usr/lib/hugs/libraries/");
         } else {
-            safesystem("./setup build");
             safesystem("mkdir -p $tmp/usr/share/doc/$package");
             safesystem("mkdir -p $tmp" . getcabalbasepath($pkgtype));
             safesystem("./setup copy --copy-prefix=$tmp" . getcabalbasepath($pkgtype));
