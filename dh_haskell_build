@@ -190,20 +190,6 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
             safesystem("./setup configure --prefix=" . getcabalbasepath($pkgtype)
                        . " --with-compiler=/usr/bin/$pkgtype");
         }
-        if ($pkgtype eq "hugs") {
-            # Cabal always dies here.
-            print "Running: ./setup build\n";
-            system("./setup build");
-            safesystem("mkdir -p $tmp/usr/lib/hugs/libraries");
-            safesystem("cp -rv dist/build/* $tmp/usr/lib/hugs/libraries/");
-        } else {
-            safesystem("./setup build");
-            safesystem("mkdir -p $tmp/usr/share/doc/$package");
-            safesystem("mkdir -p $tmp" . getcabalbasepath($pkgtype));
-            safesystem("./setup copy --copy-prefix=$tmp" . getcabalbasepath($pkgtype));
-            safesystem("cp .installed-pkg-config $tmp" . getcabalpkglibpath($pkgtype) . "/installed-pkg-config");
-        }
-        print " Build for $pkgtype complete.\n";
     }
 }
 

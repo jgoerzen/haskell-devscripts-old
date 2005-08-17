@@ -3,4 +3,5 @@
 set -e
 dh_haskell_prep "$@"
 dh_haskell_build "$@"
+dh_haskell_install "$@"
 

@@ -58,7 +58,7 @@ install: build
 	# Add here commands to install the package into debian/haskell-devscripts.
 	#$(MAKE) install DESTDIR=$(CURDIR)/debian/haskell-devscripts
 	pod2man dh_haskell > dh_haskell.1
-	cp dh_haskell dh_haskell_prep dh_haskell_build debian/haskell-devscripts/usr/bin/
+	cp dh_haskell dh_haskell_install dh_haskell_prep dh_haskell_build debian/haskell-devscripts/usr/bin/
 	cp p*-ghc debian/haskell-devscripts/usr/share/debhelper/autoscripts/
 
 

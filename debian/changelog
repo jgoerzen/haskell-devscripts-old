@@ -1,6 +1,6 @@
 haskell-devscripts (0.5.7) unstable; urgency=low
 
-  * Added dh_haskell_build.
+  * Added dh_haskell_{prep,build,install}.
 
  -- John Goerzen <jgoerzen@complete.org>  Wed, 17 Aug 2005 02:46:04 -0500
 
