@@ -116,7 +116,7 @@ sub type_of_package {
 
 sub version_of_debpkg {
     my $pkgname = shift;
-    my $retval = `dpkg -s $pkgname | grep ^Version | awk '{print \$2}'`;
+    my $retval = `dpkg -s $pkgname | grep -i ^Version | awk '{print \$2}'`;
     chomp $retval;
     return $retval;
     }
@@ -136,13 +136,13 @@ sub upstream_version {
             
 
 sub getcabalname {
-    my $retval = `grep ^Name *.cabal | awk '{print \$2}'`;
+    my $retval = `grep -i ^Name *.cabal | awk '{print \$2}'`;
     chomp $retval;
     return $retval;
 }
 
 sub getcabalversion {
-    my $retval = `grep ^Version *.cabal | awk '{print \$2}'`;
+    my $retval = `grep -i ^Version *.cabal | awk '{print \$2}'`;
     chomp $retval;
     return $retval;
 }
