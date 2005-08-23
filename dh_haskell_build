@@ -169,7 +169,13 @@ sub safesystem {
 }
 
 print "Building setup...\n";
-safesystem("ghc6 -package Cabal Setup.lhs -o setup");
+
+my $setup;
+for my $candidate (qw(Setup.lhs Setup.hs)) {
+	$setup = $candidate, last if -e $candidate;
+}
+die unless -e $setup;
+safesystem("ghc6 -package Cabal $setup -o setup");
 
 foreach my $package (@{$dh{DOPACKAGES}}) {
     my $tmp = tmpdir($package);
