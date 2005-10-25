@@ -1,3 +1,9 @@
+haskell-devscripts (0.5.11) unstable; urgency=low
+
+  * Now give version when deregistering packages in postinst.
+
+ -- John Goerzen <jgoerzen@complete.org>  Tue, 25 Oct 2005 05:58:47 -0500
+
 haskell-devscripts (0.5.10) unstable; urgency=low
 
   * Fixed a bug in dh_haskell when building multiple packages,
