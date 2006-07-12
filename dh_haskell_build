@@ -95,7 +95,7 @@ init();
 
 sub is_handled_package {
     my $pkgname = shift;
-    if ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/) {
+    if ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-(dev|prof)$/) {
         return 1;
     } elsif ($pkgname =~ m/libhugs-.+$/) {
         return 1;

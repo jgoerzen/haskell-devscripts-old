@@ -104,12 +104,27 @@ sub is_handled_package {
     }
 }
 
+sub is_handled_profiling {
+    my $pkgname = shift;
+    if ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-prof$/) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+sub dev_name {
+    my $package = shift;
+    my @pn = ($package =~ m/^lib(ghc5|ghc6|nhc98|hugs)-(.+)-prof$/);
+    return "lib$pn[0]-$pn[1]-dev";
+}
+
 sub type_of_package {
     my $pkgname = shift;
     if ($pkgname =~ m/^libhugs-.+$/) {
         return "hugs";
     } else {
-        my @pn = ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/);
+        my @pn = ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-(dev|prof)$/);
         return $pn[0];
     }
 }
@@ -173,7 +188,9 @@ print "Generating meta-information...\n";
 foreach my $package (@{$dh{DOPACKAGES}}) {
 	my $tmp = tmpdir($package);
 
+
         if (is_handled_package($package)) {
+	    # substitute ${haskell:Depends}
             my $pkgtype = type_of_package($package);
             delsubstvar($package, "haskell:Depends");
             addsubstvar($package, "haskell:Depends", 
@@ -182,7 +199,8 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
                 addsubstvar($package, "haskell:Depends",
                             $pkgtype, "<< " . upstream_version(version_of_type($pkgtype)) . "-999");
             }
-            
+
+	    # add postinst/prerm scripts
             if ($pkgtype eq "ghc5" || $pkgtype eq "ghc6") {
                 # Build scripts
                 my $ghcver = "ghc-" . upstream_version(version_of_type($pkgtype));
@@ -198,6 +216,20 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
             }
         }
 
+        if (is_handled_profiling($package)) {
+	    # substitute ${haskell:Depends} for profiling package
+	    my $pkgtype = type_of_package($package);
+	    delsubstvar($package, "haskell:Depends");
+	    addsubstvar($package, "haskell:Depends", 
+			$pkgtype, ">= " . upstream_version(version_of_type($pkgtype)));
+	    addsubstvar($package, "haskell:Depends",
+			$pkgtype, "<< " . upstream_version(version_of_type($pkgtype)) . "-999");
+	    # Call isnative becuase it sets $dh{VERSION}
+	    # as a side effect.
+	    isnative($package);
+	    addsubstvar($package, "haskell:Depends",
+			dev_name($package), "= " . $dh{VERSION});
+	}
 }
 
 =head1 BUGS
