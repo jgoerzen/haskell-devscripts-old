@@ -238,6 +238,12 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
 	    isnative($package);
 	    addsubstvar($package, "haskell:Depends",
 			dev_name($package), "= " . $dh{VERSION});
+
+	    # add depends on ghc?-prof
+	    if (($pkgtype eq "ghc5" || $pkgtype eq "ghc6")) {
+		addsubstvar($package, "haskell:Depends",
+			    $pkgtype . "-prof");
+	    }
 	}
 }
 
