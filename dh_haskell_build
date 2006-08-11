@@ -104,7 +104,7 @@ init();
 
 sub is_handled_package {
     my $pkgname = shift;
-    if ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-(dev|prof)$/) {
+    if ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/) {
         return 1;
     } elsif ($pkgname =~ m/libhugs-.+$/) {
         return 1;
@@ -170,6 +170,25 @@ sub getcabalpkglibpath {
     return getcabalbasepath($pkgtype) . "/lib/" . getcabalnameversion();
 }
 
+sub profiling_name {
+    my $package = shift;
+    my @pn = ($package =~ m/^lib(ghc5|ghc6|nhc98|hugs)-(.+)-dev$/);
+    return "lib$pn[0]-$pn[1]-prof";
+}
+
+sub is_profiling_enabled {
+    my $package = shift;
+    my $packages = shift;
+    my $profname = profiling_name($package);
+
+    foreach my $p (@{$packages}) {
+	if ($p =~ m/^$profname$/) {
+	    return 1;
+	}
+    }
+    return 0;
+}
+
 sub safesystem {
     my $program = shift;
     print "Running: $program\n";
@@ -205,7 +224,11 @@ foreach my $package (@{$dh{DOPACKAGES}}) {
             print "Running: ./setup build\n";
             system("./setup build");
         } else {
-            safesystem("./setup configure --prefix=" . getcabalbasepath($pkgtype)
+	    my $profiling_option = "";
+	    if (is_profiling_enabled($package,$dh{DOPACKAGES})) {
+		$profiling_option = " --enable-library-profiling ";
+	    }
+            safesystem("./setup configure " . $profiling_option . " --prefix=" . getcabalbasepath($pkgtype)
                        . " --with-compiler=/usr/bin/$pkgtype");
             safesystem("./setup build");
         }
