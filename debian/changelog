@@ -1,3 +1,10 @@
+haskell-devscripts (0.5.12) unstable; urgency=low
+
+  * New support for building profiling packages.  Thanks to Jeremy Shaw
+    for this.
+
+ -- John Goerzen <jgoerzen@complete.org>  Fri, 11 Aug 2006 17:58:47 -0500
+
 haskell-devscripts (0.5.11) unstable; urgency=low
 
   * Now give version when deregistering packages in postinst.
