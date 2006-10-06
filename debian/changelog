@@ -1,3 +1,9 @@
+haskell-devscripts (0.5.13~arjan1) unstable; urgency=low
+
+  * Move debhelper to Build-Depends as suggested by lintian.
+
+ -- Arjan Oosting <arjanoosting@home.nl>  Fri,  6 Oct 2006 22:30:10 +0200
+
 haskell-devscripts (0.5.12) unstable; urgency=low
 
   * New support for building profiling packages.  Thanks to Jeremy Shaw
