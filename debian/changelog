@@ -5,6 +5,8 @@ haskell-devscripts (0.5.13~arjan1) unstable; urgency=low
     bashims.
   * Replace dh_haskell_buildinst with simple shell script to decrease code
     duplicity. 
+  * Introduce separate perl module which contains the code shared between
+    the different dh_haskell tools.
 
  -- Arjan Oosting <arjanoosting@home.nl>  Fri,  6 Oct 2006 22:30:10 +0200
 

@@ -60,7 +60,7 @@ install: build
 	pod2man dh_haskell_build > dh_haskell.1
 	cp dh_haskell dh_haskell_install dh_haskell_buildinst dh_haskell_prep dh_haskell_build debian/haskell-devscripts/usr/bin/
 	cp p*-ghc debian/haskell-devscripts/usr/share/debhelper/autoscripts/
-
+	cp Dh_Haskell.pm debian/haskell-devscripts/usr/share/haskell-devscripts
 
 
 binary-arch: build install

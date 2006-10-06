@@ -28,6 +28,9 @@ use strict;
 use File::Find;
 use Debian::Debhelper::Dh_Lib;
 
+use lib '/usr/share/haskell-devscripts/';
+use Dh_Haskell;
+
 =head1 SYNOPSIS
 
 B<dh_haskell> [S<I<debhelper options>>] 
@@ -101,96 +104,6 @@ darcs get --partial http://www.n-heptane.com/nhlab/repos/cabalDebianTemplate/
 =cut
 
 init();
-
-sub is_handled_package {
-    my $pkgname = shift;
-    if ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-dev$/) {
-        return 1;
-    } elsif ($pkgname =~ m/libhugs-.+$/) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-sub is_handled_profiling {
-    my $pkgname = shift;
-    if ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-prof$/) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-sub dev_name {
-    my $package = shift;
-    my @pn = ($package =~ m/^lib(ghc5|ghc6|nhc98|hugs)-(.+)-prof$/);
-    return "lib$pn[0]-$pn[1]-dev";
-}
-
-sub type_of_package {
-    my $pkgname = shift;
-    if ($pkgname =~ m/^libhugs-.+$/) {
-        return "hugs";
-    } else {
-        my @pn = ($pkgname =~ m/^lib(ghc5|ghc6|nhc98|hugs)-.+-(dev|prof)$/);
-        return $pn[0];
-    }
-}
-
-sub version_of_debpkg {
-    my $pkgname = shift;
-    my $retval = `dpkg -s $pkgname | grep -i ^Version | awk '{print \$2}'`;
-    chomp $retval;
-    return $retval;
-    }
-
-sub version_of_type {
-    my $pkgtype = shift;
-    return version_of_debpkg($pkgtype);
-}
-
-sub upstream_version {
-    my $inver = shift;
-    if ($inver =~ m/-/) {
-        my @v = ($inver =~ m/^(.+)-[^-]+$/);
-        return $v[0];
-    }
-}
-            
-
-sub getcabalname {
-    my $retval = `grep -i ^Name *.cabal | awk '{print \$2}'`;
-    chomp $retval;
-    return $retval;
-}
-
-sub getcabalversion {
-    my $retval = `grep -i ^Version *.cabal | awk '{print \$2}'`;
-    chomp $retval;
-    return $retval;
-}
-
-sub getcabalnameversion {
-    return getcabalname() . "-" . getcabalversion();
-}
-
-sub getcabalbasepath {
-    my $pkgtype = shift;
-    return "/usr/lib/haskell-packages/$pkgtype";
-}
-
-sub getcabalpkglibpath {
-    my $pkgtype = shift;
-    return getcabalbasepath($pkgtype) . "/lib/" . getcabalnameversion();
-}
-
-sub safesystem {
-    my $program = shift;
-    print "Running: $program\n";
-    system($program) == 0
-        or die "$program files: $?";
-}
 
 print "Generating meta-information...\n";
 
