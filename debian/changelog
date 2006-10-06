@@ -2,7 +2,9 @@ haskell-devscripts (0.5.13~arjan1) unstable; urgency=low
 
   * Move debhelper to Build-Depends as suggested by lintian.
   * Change she-bang for dh_haskell to /bin/sh as does not use any
-    bashims. 
+    bashims.
+  * Replace dh_haskell_buildinst with simple shell script to decrease code
+    duplicity. 
 
  -- Arjan Oosting <arjanoosting@home.nl>  Fri,  6 Oct 2006 22:30:10 +0200
 
