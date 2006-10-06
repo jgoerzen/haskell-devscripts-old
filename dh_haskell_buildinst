@@ -22,5 +22,4 @@ done
 for p in `dh_listpackages "$OPTIONS"` ; do
     dh_haskell_build --package=$p $FILTERED_OPTIONS
     dh_haskell_install  --package=$p $FILTERED_OPTIONS
-done	
-
+done
