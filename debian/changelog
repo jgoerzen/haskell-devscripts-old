@@ -1,5 +1,6 @@
-haskell-devscripts (0.5.13~arjan1) unstable; urgency=low
+haskell-devscripts (0.5.13) unstable; urgency=low
 
+  * Thanks to Arjan Oosting for the following patches:
   * Move debhelper to Build-Depends as suggested by lintian.
   * Change she-bang for dh_haskell to /bin/sh as does not use any
     bashims.
@@ -7,8 +8,6 @@ haskell-devscripts (0.5.13~arjan1) unstable; urgency=low
     duplicity. 
   * Introduce separate Perl module which contains the code shared between
     the different dh_haskell tools.
-
- -- Arjan Oosting <arjanoosting@home.nl>  Fri,  6 Oct 2006 22:30:10 +0200
 
 haskell-devscripts (0.5.12) unstable; urgency=low
 
