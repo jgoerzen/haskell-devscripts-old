@@ -20,6 +20,12 @@ do
 done
 
 for p in `dh_listpackages "$OPTIONS"` ; do
-    dh_haskell_build --package=$p $FILTERED_OPTIONS
-    dh_haskell_install  --package=$p $FILTERED_OPTIONS
+    profiled=`echo $p | sed "s/\(libghc6-.*\)-dev/\1-prof/"`
+    if [ $p = $profiled ] ; then
+	dh_haskell_build --package=$p $FILTERED_OPTIONS
+	dh_haskell_install --package=$p $FILTERED_OPTIONS
+    else
+	dh_haskell_build --package=$p --package=$profiled $FILTERED_OPTIONS
+	dh_haskell_install --package=$p --package=$profiled $FILTERED_OPTIONS
+    fi
 done
