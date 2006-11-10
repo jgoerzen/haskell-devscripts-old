@@ -5,7 +5,7 @@ Maintainer: John Goerzen <jgoerzen@complete.org>
 Uploaders: Arjan Oosting <arjan@debian.org>
 Build-Depends: debhelper (>= 4.0.0)
 Build-Depends-Indep: perl
-Standards-Version: 3.6.1
+Standards-Version: 3.7.2
 
 Package: haskell-devscripts
 Architecture: all
