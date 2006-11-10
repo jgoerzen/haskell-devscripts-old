@@ -1,3 +1,13 @@
+haskell-devscripts (0.5.14) unstable; urgency=medium
+  
+  * Set urgency to medium to get fixed version into etch.
+  * debian/control: 
+    - Add myself to Uploaders.
+    - Bbump Standards-Version. No changes needed.
+  * dh_haskell_buildinst: fix building of profiling packages.
+
+ -- Arjan Oosting <arjan@debian.org>  Fri, 10 Nov 2006 21:43:08 +0100
+
 haskell-devscripts (0.5.13) unstable; urgency=low
 
   * Thanks to Arjan Oosting for the following patches:
